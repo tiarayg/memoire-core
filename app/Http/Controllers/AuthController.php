@@ -33,4 +33,28 @@ class AuthController extends Controller
             'token' => $token,
         ], 201);
     }
+
+    public function login(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['Email atau password salah.'],
+            ]);
+        }
+
+        $token = $user->createToken('memoire')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login berhasil.',
+            'user' => $user,
+            'token' => $token,
+        ]);
+    }
 }
