@@ -114,4 +114,37 @@ class CapsuleController extends Controller
             'capsule' => $capsule,
         ]);
     }
+
+    public function open(Request $request, Capsule $capsule)
+    {
+        // Pastikan capsule milik user yang sedang login
+        if ($capsule->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Capsule tidak ditemukan.',
+            ], 404);
+        }
+
+        // Capsule hanya bisa dibuka jika sudah ready
+        if ($capsule->status !== 'ready') {
+            return response()->json([
+                'message' => 'Capsule belum dapat dibuka.',
+            ], 422);
+        }
+
+        // Catat pembukaan capsule
+        $capsule->opens()->create([
+            'user_id' => $request->user()->id,
+            'opened_at' => now(),
+        ]);
+
+        // Ubah status menjadi opened
+        $capsule->update([
+            'status' => 'opened',
+        ]);
+
+        return response()->json([
+            'message' => 'Capsule berhasil dibuka.',
+            'capsule' => $capsule->fresh(),
+        ]);
+    }
 }

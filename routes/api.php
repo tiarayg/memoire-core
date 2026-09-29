@@ -17,5 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/capsules', [CapsuleController::class, 'store']);
     Route::put('/capsules/{capsule}', [CapsuleController::class, 'update']);
     Route::post('/capsules/{capsule}/seal', [CapsuleController::class, 'seal']);
+
+    Route::post('/capsules/{capsule}/open', [CapsuleController::class, 'open']);
     
 });
